@@ -16,8 +16,8 @@
 # ------------------------------------------------------------------------ #
 # Histórico:
 #
-#   v1.0 09/09/2020, Mateus:
-#       - Início do programa
+#   v0.0.1 09/09/2020, Mateus:
+#        - Início do programa
 # ------------------------------------------------------------------------ #
 # Testado em:
 #   bash 5.0.18(1)-release
@@ -27,18 +27,58 @@
 # ------------------------------------------------------------------------ #
 
 # ------------------------------- VARIÁVEIS ----------------------------------------- #
+  CH_INON=0
 
+  PEGAR_VERSAO=`egrep "^#   v" $0 | tail -n1 | cut -d " " -f 4`
+
+  VERSAO="$(basename "$0") $PEGAR_VERSAO"
+
+  MENSAGEM_AJUDA="Uso: $(basename "$0") [OPÇÕES]
+   -h --help       Mostra a ajuda
+   -V --version    Mostra a versão
+   -o --off        Desliga o retorno
+  "
 # ------------------------------------------------------------------------ #
 
 # ------------------------------- TESTES ----------------------------------------- #
+  # While das opções de linha de comando.
+  while test -n "$1"
+        do
+  # Case das opçãoes.
+  case "$1" in
+   	   -h | --help )
+              echo "$MENSAGEM_AJUDA"
+  	          exit 0
+   	          ;;
 
+           -V | --version )
+  	          echo "$VERSAO"
+  	          exit 0
+  	          ;;
+
+           -o | --off )
+		 CH_INON=1
+		 ;;
+
+                 * )
+              echo "Opção inválida: $1"
+	      echo "Consulte a ajuda: -h "
+  		        exit 1
+  	          ;;
+          esac
+         shift
+  done
 # ------------------------------------------------------------------------ #
 
 # ------------------------------- FUNÇÕES ----------------------------------------- #
-
 # ------------------------------------------------------------------------ #
 
 # ------------------------------- EXECUÇÃO ----------------------------------------- #
-
+  if test "$CH_INON" = 0
+  	then
+  	    pactl load-module module-loopback 1> /dev/null
+        else
+	    pactl unload-module module-loopback
+  fi
 # ------------------------------------------------------------------------ #
 
